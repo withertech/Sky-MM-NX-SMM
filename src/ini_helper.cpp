@@ -36,6 +36,8 @@
 #include <fstream>
 #include <memory>
 
+#include <libsmm.h>
+
 static const std::vector<std::string> g_archive_types_1 = {"", "Animations", "Meshes", "Sounds"};
 static const std::vector<std::string> g_archive_types_2 = {"Textures", "Voices"};
 static const std::vector<std::string> g_archive_types_3 = {"Animations"};
@@ -236,12 +238,14 @@ static int writeFileList(const char *path, StdIni &ini, std::string key,
     ini.sections.insert_or_assign(INI_SECTION_ARCHIVE, sec_map);
 
     std::ofstream ini_stream(path, std::ios::out | std::ios::trunc | std::ios::binary);
-    if (!ini_stream.good()) {
+    std::ofstream ini_stream_smm(path, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!ini_stream.good() || !ini_stream_smm.good()) {
         FATAL("Failed to open %s", path);
         return -1;
     }
 
     ini.generate(ini_stream);
+    ini.generate(ini_stream_smm);
     return 0;
 }
 

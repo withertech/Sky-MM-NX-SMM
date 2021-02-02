@@ -45,6 +45,8 @@
 #include <cstdio>
 #include <dirent.h>
 
+#include <libsmm.h>
+
 #define STRINGIZE0(x) #x
 #define STRINGIZE(x) STRINGIZE0(x)
 
@@ -185,25 +187,33 @@ int processPluginsFile() {
 int writePluginsFile(void) {
     std::ofstream plugins_stream = std::ofstream(getRomfsPath(SKYRIM_PLUGINS_FILE),
             std::ios::out | std::ios::trunc | std::ios::binary);
-    if (!plugins_stream.good()) {
+    std::ofstream plugins_stream_smm = std::ofstream(smmModPathForCfwPath(getRomfsPath(SKYRIM_PLUGINS_FILE)),
+            std::ios::out | std::ios::trunc | std::ios::binary);
+
+    if (!plugins_stream.good() || !plugins_stream_smm.good()) {
         FATAL("Failed to open Plugins file");
         return -1;
     }
 
     // write header that we loaded earlier
     plugins_stream << g_plugins_header;
+    plugins_stream_smm << g_plugins_header;
 
     for (std::shared_ptr<SkyrimMod> mod : getGlobalModList()) {
         if (mod->has_esp) {
             if (mod->esp_enabled) {
                 plugins_stream << '*';
+                plugins_stream_smm << '*';
             }
             if (mod->is_master) {
                 plugins_stream << mod->base_name << ".esm";
+                plugins_stream_smm << mod->base_name << ".esm";
             } else {
                 plugins_stream << mod->base_name << ".esp";
+                plugins_stream_smm << mod->base_name << ".esp";
             }
             plugins_stream << '\n';
+            plugins_stream_smm << '\n';
         }
     }
 
@@ -345,6 +355,7 @@ void handleScrollHold(u64 kDown, u64 kHeld, HidControllerKeys key, ModGui &gui) 
 
 int main(int argc, char **argv) {
     consoleInit(NULL);
+    smmInit();
 
     ModGui gui = ModGui(getGlobalModList(), HEADER_HEIGHT, CONSOLE_LINES - HEADER_HEIGHT - FOOTER_HEIGHT);
 
@@ -476,6 +487,7 @@ int main(int argc, char **argv) {
         consoleUpdate(NULL);
     }
 
+    smmExit();
     consoleExit(NULL);
     return 0;
 }

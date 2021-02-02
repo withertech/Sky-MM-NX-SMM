@@ -12,7 +12,7 @@ VERSION_MINOR := 1
 VERSION_MICRO := 2
 
 APP_TITLE	:=	SkyMM-NX
-APP_AUTHOR	:=	caseif
+APP_AUTHOR	:=	caseif+witherking25
 APP_VERSION	:=	${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
 
 TARGET		:=	$(subst $e ,_,$(notdir $(APP_TITLE)))
@@ -41,9 +41,9 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
 ASFLAGS	:=	$(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs $(ARCH) -Wl,-no-as-needed,-Map,$(notdir $*.map)
 
-LIBS	:= -lnx
+LIBS	:= -lsmm -lnx
 
-LIBDIRS	:= $(PORTLIBS) $(LIBNX)
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(DEVKITPRO)/libsmm
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
