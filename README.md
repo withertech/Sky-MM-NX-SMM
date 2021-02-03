@@ -1,6 +1,6 @@
 # SkyMM-NX-SMM
 
-SkyMM-NX is a plugin for SimpleModManager that runs on your Switch and provides an easy way to toggle skyrim mods on
+SkyMM-NX-SMM is a plugin for SimpleModManager that runs on your Switch and provides an easy way to toggle skyrim mods on
 and off.
 
 SkyMM will attempt to discover all mods present in Skyrim's ROMFS on the SD card and present them through its interface.
