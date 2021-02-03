@@ -43,7 +43,7 @@ LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs $(ARCH) -Wl,-no-as-needed,-Map,
 
 LIBS	:= -lsmm -lnx
 
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(DEVKITPRO)/libsmm
+LIBDIRS	:= $(PORTLIBS) $(LIBNX)
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
