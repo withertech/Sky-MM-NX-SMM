@@ -238,9 +238,13 @@ static int writeFileList(const char *path, StdIni &ini, std::string key,
     ini.sections.insert_or_assign(INI_SECTION_ARCHIVE, sec_map);
 
     std::ofstream ini_stream(path, std::ios::out | std::ios::trunc | std::ios::binary);
-    std::ofstream ini_stream_smm(path, std::ios::out | std::ios::trunc | std::ios::binary);
-    if (!ini_stream.good() || !ini_stream_smm.good()) {
+    std::ofstream ini_stream_smm(smmModPathForCfwPath(path), std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!ini_stream.good()) {
         FATAL("Failed to open %s", path);
+        return -1;
+    }
+	if (!ini_stream_smm.good()) {
+        FATAL("Failed to open %s", smmModPathForCfwPath(path));
         return -1;
     }
 
