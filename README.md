@@ -1,10 +1,10 @@
 # SkyMM-NX-SMM
 
-SkyMM-NX-SMM is a plugin for SimpleModManager that runs on your Switch and provides an easy way to toggle skyrim mods on
+SkyMM-NX-SMM is a homebrew app (or plugin for SimpleModManager if you change the file extension to .smm) that runs on your Switch and provides an easy way to toggle skyrim mods on
 and off.
 
 SkyMM will attempt to discover all mods present in Skyrim's ROMFS on the SD card and present them through its interface.
-Through the interface, you can toggle mods on or off, or change the load order by holding `Y`. Note that the load order
+Through the interface, you can toggle mods on or off, or change the load order by toggling `Y`. Note that the load order
 for pure replacement mods (lacking an ESP) will not be preserved when the respective mods are disabled.
 
 When the save function is invoked, the INI and `Plugins` files will be modified accordingly and saved to the SD card.

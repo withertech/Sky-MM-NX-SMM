@@ -40,8 +40,8 @@ CFLAGS	:=	-Wall -O3 -ffunction-sections \
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__ -DBOREALIS_RESOURCES="\"$(BOREALIS_RESOURCES)\""
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
-
+CXXFLAGS	:= $(CFLAGS)  -std=c++17
+#-fno-rtti -fno-exceptions
 ASFLAGS	:=	$(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs $(ARCH) -Wl,-no-as-needed,-Map,$(notdir $*.map)
 
