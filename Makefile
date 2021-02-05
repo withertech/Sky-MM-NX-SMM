@@ -8,8 +8,8 @@ TOPDIR ?= $(CURDIR)
 include $(DEVKITPRO)/libnx/switch_rules
 
 VERSION_MAJOR := 1
-VERSION_MINOR := 1
-VERSION_MICRO := 2
+VERSION_MINOR := 0
+VERSION_MICRO := 0
 
 APP_TITLE	:=	SkyMM-NX
 APP_AUTHOR	:=	caseif+witherking25
@@ -134,7 +134,7 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-all	:	$(OUTPUT).nro
+all	:	$(OUTPUT).smm
 
 ifeq ($(strip $(NO_NACP)),)
 $(OUTPUT).nro	:	$(OUTPUT).elf $(OUTPUT).nacp
@@ -142,9 +142,17 @@ else
 $(OUTPUT).nro	:	$(OUTPUT).elf
 endif
 
+$(OUTPUT).smm	:	$(OUTPUT).nro
+
 $(OUTPUT).elf	:	$(OFILES)
 
 $(OFILES_SRC)	: $(HFILES_BIN)
+
+
+%.smm :		%.nro
+	@cp $(basename $@).nro $@
+	@echo built ... $(notdir $@)
+
 
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data

@@ -2,7 +2,7 @@
 frame_root::frame_root()
 {
 	this->setTitle("SkyMM-NX");
-	this->setSubtitle("", "1.1.2");
+	this->setSubtitle("", "1.0.0");
 	this->setIcon("romfs:/images/icon.jpg");
 
 	this->addTab("Mods", new tab_mods());
