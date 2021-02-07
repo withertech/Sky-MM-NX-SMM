@@ -186,7 +186,7 @@ void tab_mods::onChildFocusGained(View *child)
 		std::iter_swap(old_i, new_i);
 		g_dirty = true;
 		this->setTriggerUpdateListItems(true);
-		View::onChildFocusGained(child);
+		ScrollView::onChildFocusGained(child);
 		g_edit_load_order = false;
 		g_status_msg = "";
 	}

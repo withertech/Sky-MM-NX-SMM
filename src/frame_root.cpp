@@ -1,8 +1,11 @@
 #include <frame_root.hpp>
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+#define VERSION QUOTE(__VERSION)
 frame_root::frame_root()
 {
 	this->setTitle("SkyMM-NX");
-	this->setSubtitle("", "1.0.0");
+	this->setSubtitle("", VERSION);
 	this->setIcon("romfs:/images/icon.jpg");
 
 	this->addTab("Mods", new tab_mods());
