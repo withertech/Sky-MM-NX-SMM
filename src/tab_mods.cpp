@@ -8,10 +8,6 @@ tab_mods::tab_mods()
 	this->triggerUpdateListItems = false;
 	this->triggerUpdateModsDisplayedStatus = false;
 	this->frameCounter = -1;
-	this->updateListItems();
-}
-void tab_mods::updateListItems()
-{
 	this->clear();
 	// Setup the list
 	auto mod_folders_list = getGlobalModList();
@@ -20,13 +16,13 @@ void tab_mods::updateListItems()
 		std::string selected_mod = mod_folders_list[i_folder].get()->base_name;
 		brls::Logger::debug("Adding mod: %s", selected_mod.c_str());
 		ModListItem *item = new ModListItem(selected_mod, "", "");
-		item->getClickEvent()->subscribe([this, selected_mod](View *view) {
+		item->getClickEvent()->subscribe([this, item](View *view) {
 			if (!g_dialog_open)
 			{
-				auto *dialog = new brls::Dialog("sky/dialog/enable1"_i18n + selected_mod + "sky/dialog/enable2"_i18n);
+				auto *dialog = new brls::Dialog("sky/dialog/enable1"_i18n + item->getLabel() + "sky/dialog/enable2"_i18n);
 
-				dialog->addButton("sky/dialog/yes"_i18n, [selected_mod, dialog, this](brls::View *view) {
-					std::shared_ptr<SkyrimMod> mod = find_mod(getGlobalModList(), selected_mod);
+				dialog->addButton("sky/dialog/yes"_i18n, [item, dialog, this](brls::View *view) {
+					std::shared_ptr<SkyrimMod> mod = find_mod(getGlobalModList(), item->getLabel());
 					switch (mod->getStatus())
 					{
 					case ModStatus::ENABLED:
@@ -71,13 +67,13 @@ void tab_mods::updateListItems()
 		});
 		item->updateActionHint(brls::Key::A, "sky/hints/enable"_i18n);
 
-		item->registerAction("sky/hints/disable"_i18n, brls::Key::X, [this, selected_mod] {
+		item->registerAction("sky/hints/disable"_i18n, brls::Key::X, [this, item] {
 			if (!g_dialog_open)
 			{
-				auto *dialog = new brls::Dialog("sky/dialog/disable1"_i18n + selected_mod + "sky/dialog/disable2"_i18n);
+				auto *dialog = new brls::Dialog("sky/dialog/disable1"_i18n + item->getLabel() + "sky/dialog/disable2"_i18n);
 
-				dialog->addButton("sky/dialog/yes"_i18n, [selected_mod, dialog, this](brls::View *view) {
-					std::shared_ptr<SkyrimMod> mod = find_mod(getGlobalModList(), selected_mod);
+				dialog->addButton("sky/dialog/yes"_i18n, [item, dialog, this](brls::View *view) {
+					std::shared_ptr<SkyrimMod> mod = find_mod(getGlobalModList(), item->getLabel());
 					switch (mod->getStatus())
 					{
 					case ModStatus::ENABLED:
@@ -124,7 +120,7 @@ void tab_mods::updateListItems()
 		// item->setValueActiveColor(nvgRGB(80, 80, 80));
 
 		this->addView(item);
-		_modsListItems_[selected_mod] = item;
+		_modsListItems_.push_back(item);
 		this->setTriggerUpdateModsDisplayedStatus(true);
 	}
 
@@ -155,7 +151,15 @@ void tab_mods::updateListItems()
 			});
 	}
 }
-std::map<std::string, ModListItem *> &tab_mods::getModsListItems()
+void tab_mods::updateListItems()
+{
+	for (auto it = getModsListItems().begin(); it != getModsListItems().end(); it++)
+	{
+		(*it)->setLabel(getGlobalModList().at(std::distance(getModsListItems().begin(), it)).get()->base_name);
+	}
+	this->setTriggerUpdateModsDisplayedStatus(true);
+}
+std::vector<ModListItem *> &tab_mods::getModsListItems()
 {
 	return _modsListItems_;
 }
@@ -186,10 +190,10 @@ void tab_mods::onChildFocusGained(View *child)
 		std::iter_swap(old_i, new_i);
 		g_dirty = true;
 		this->setTriggerUpdateListItems(true);
-		ScrollView::onChildFocusGained(child);
 		g_edit_load_order = false;
 		g_status_msg = "";
 	}
+	ScrollView::onChildFocusGained(child);
 }
 void tab_mods::draw(NVGcontext *vg, int x, int y, unsigned int width, unsigned int height, brls::Style *style,
 					brls::FrameContext *ctx)
@@ -206,7 +210,7 @@ void tab_mods::draw(NVGcontext *vg, int x, int y, unsigned int width, unsigned i
 	if (this->triggerUpdateListItems)
 	{
 		this->updateListItems();
-		brls::Application::giveFocus(getModsListItems()[g_prev_mod]);
+		// brls::Application::giveFocus(getModsListItems()[g_prev_mod]);
 		this->triggerUpdateListItems = false;
 	}
 }
@@ -220,30 +224,28 @@ void tab_mods::setTriggerUpdateListItems(bool triggerUpdateListItems_)
 {
 	tab_mods::triggerUpdateListItems = triggerUpdateListItems_;
 }
-
 void tab_mods::updateDisplayedModsStatus()
 {
-	for (auto &modItem : _modsListItems_)
+	for (auto it = getModsListItems().begin(); it != getModsListItems().end(); it++)
 	{
-		std::string reference_str = modItem.first;
+		std::string reference_str = (*it)->getLabel();
 		std::shared_ptr<SkyrimMod> mod = find_mod(getGlobalModList(), reference_str);
 		NVGcolor color;
 		switch (mod->getStatus())
 		{
 		case ModStatus::ENABLED:
-			modItem.second->setValue("sky/status/enabled"_i18n);
+			(*it)->setValue("sky/status/enabled"_i18n);
 			color = nvgRGB(88, 195, 169);
 			break;
 		case ModStatus::PARTIAL:
-			modItem.second->setValue("sky/status/partial"_i18n);
+			(*it)->setValue("sky/status/partial"_i18n);
 			color = nvgRGB(245 * 0.85, 198 * 0.85, 59 * 0.85);
 			break;
 		case ModStatus::DISABLED:
-			modItem.second->setValue("sky/status/disabled"_i18n);
+			(*it)->setValue("sky/status/disabled"_i18n);
 			color = nvgRGB(80, 80, 80);
 			break;
 		}
-
-		this->_modsListItems_[modItem.first]->setValueActiveColor(color);
+		(*it)->setValueActiveColor(color);
 	}
 }

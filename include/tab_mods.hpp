@@ -5,13 +5,14 @@
 #include "main.hpp"
 #include "global.hpp"
 #include <item_mod.hpp>
+#include <assert.h>
 class ModListItem;
 class tab_mods : public brls::List
 {
 
 public:
 	tab_mods();
-	std::map<std::string, ModListItem *> &getModsListItems();
+	std::vector<ModListItem *> &getModsListItems();
 
 	void setTriggerUpdateModsDisplayedStatus(bool triggerUpdateModsDisplayedStatus_);
 	void setTriggerUpdateListItems(bool triggerUpdateListItems_);
@@ -21,7 +22,7 @@ public:
 
 private:
 	brls::Dialog *dialog;
-	std::map<std::string, ModListItem *> _modsListItems_;
+	std::vector<ModListItem *> _modsListItems_;
 	bool triggerUpdateModsDisplayedStatus;
 	bool triggerUpdateListItems;
 	int frameCounter;
