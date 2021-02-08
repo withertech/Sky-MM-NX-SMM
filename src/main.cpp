@@ -28,8 +28,8 @@
 bool g_dirty = false;
 bool g_dirty_warned = false;
 
-std::string g_status_msg = "";
-std::string g_status_msg_old = "";
+std::string g_status_msg = VERSION;
+std::string g_status_msg_old = VERSION;
 bool g_tmp_status = false;
 
 ModList g_mod_list_tmp;
@@ -308,7 +308,7 @@ void clearTempEffects(void)
 
 	if (g_tmp_status)
 	{
-		g_status_msg = "";
+		g_status_msg = VERSION;
 		g_tmp_status = false;
 	}
 }

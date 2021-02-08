@@ -10,10 +10,10 @@ tab_mods::tab_mods()
 	this->frameCounter = -1;
 	this->clear();
 	// Setup the list
-	auto mod_folders_list = getGlobalModList();
-	for (int i_folder = 0; i_folder < int(mod_folders_list.size()); i_folder++)
+	auto mod_items_list = getGlobalModList();
+	for (int i_mod = 0; i_mod < int(mod_items_list.size()); i_mod++)
 	{
-		std::string selected_mod = mod_folders_list[i_folder].get()->base_name;
+		std::string selected_mod = mod_items_list[i_mod].get()->base_name;
 		brls::Logger::debug("Adding mod: %s", selected_mod.c_str());
 		ModListItem *item = new ModListItem(selected_mod, "", "");
 		item->getClickEvent()->subscribe([this, item](View *view) {
@@ -57,7 +57,7 @@ tab_mods::tab_mods()
 					g_dialog_open = false;
 					dialog->close();
 				});
-
+				dialog->registerAction("brls/hints/back"_i18n, Key::B, [dialog] { g_dialog_open = false; return dialog->onCancel(); });
 				dialog->setCancelable(true);
 				g_dialog_open = true;
 				dialog->open();
@@ -108,7 +108,7 @@ tab_mods::tab_mods()
 					g_dialog_open = false;
 					dialog->close();
 				});
-
+				dialog->registerAction("brls/hints/back"_i18n, Key::B, [dialog] { g_dialog_open = false; return dialog->onCancel(); });
 				dialog->setCancelable(true);
 				g_dialog_open = true;
 				dialog->open();
@@ -116,15 +116,12 @@ tab_mods::tab_mods()
 			return true;
 		});
 
-		// item->setValue("Unchecked");
-		// item->setValueActiveColor(nvgRGB(80, 80, 80));
-
 		this->addView(item);
 		_modsListItems_.push_back(item);
 		this->setTriggerUpdateModsDisplayedStatus(true);
 	}
 
-	if (mod_folders_list.empty())
+	if (mod_items_list.empty())
 	{
 
 		auto *emptyListLabel = new brls::ListItem(
@@ -139,7 +136,7 @@ tab_mods::tab_mods()
 			"sky/hints/edit"_i18n, brls::Key::Y, [] {
 				if (g_edit_load_order)
 				{
-					g_status_msg = "";
+					g_status_msg = VERSION;
 					g_edit_load_order = false;
 				}
 				else
@@ -172,26 +169,28 @@ void tab_mods::onChildFocusGained(View *child)
 {
 	if (g_edit_load_order)
 	{
-		std::shared_ptr<SkyrimMod> old_mod = find_mod(getGlobalModList(), g_prev_mod);
-		std::shared_ptr<SkyrimMod> new_mod = find_mod(getGlobalModList(), g_sel_mod);
-		ModList::iterator old_i;
-		ModList::iterator new_i;
+		ModList::iterator old_i = getGlobalModList().end();
+		ModList::iterator new_i = getGlobalModList().end();
 		for (auto it = getGlobalModList().begin(); it != getGlobalModList().end(); it++)
 		{
-			if ((*it)->base_name == old_mod->base_name)
+			if ((*it)->base_name == g_prev_mod)
 			{
 				old_i = it;
 			}
-			if ((*it)->base_name == new_mod->base_name)
+			if ((*it)->base_name == g_sel_mod)
 			{
 				new_i = it;
+			}
+			if (old_i != getGlobalModList().end() && new_i != getGlobalModList().end())
+			{
+				break;
 			}
 		}
 		std::iter_swap(old_i, new_i);
 		g_dirty = true;
 		this->setTriggerUpdateListItems(true);
 		g_edit_load_order = false;
-		g_status_msg = "";
+		g_status_msg = VERSION;
 	}
 	ScrollView::onChildFocusGained(child);
 }
@@ -210,7 +209,6 @@ void tab_mods::draw(NVGcontext *vg, int x, int y, unsigned int width, unsigned i
 	if (this->triggerUpdateListItems)
 	{
 		this->updateListItems();
-		// brls::Application::giveFocus(getModsListItems()[g_prev_mod]);
 		this->triggerUpdateListItems = false;
 	}
 }
