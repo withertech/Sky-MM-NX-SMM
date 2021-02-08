@@ -24,8 +24,6 @@ Currently, the app requires that all mods follow a standard naming scheme:
 - Graceful error handling
   - I've done minimal edge testing so far, so the app probably won't respond well to most less-than-ideal
     conditions (e.g. missing or malformed files)
-- Proper graphical interface
-  - This isn't high priority since the console interface seems to work well enough for now
 - INI injection support
   - Injecting INIs is easy; the hard part is disabling them in a sane way
 
